@@ -1,0 +1,1 @@
+Ajout des class des différentes tables.
