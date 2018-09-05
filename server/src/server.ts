@@ -1,12 +1,10 @@
-import { Connection } from './database/database';
 import * as routesUsers from './controller/user.controller';
+import * as routesSpotify from './controller/spotify.controller';
 
 // Basic Setup
 var Http = require('http');
 var Express = require('express');
 var Parser = require('body-parser');
-export const mypath = __dirname;
-
 
 // Setup express
 let app = Express();
@@ -20,7 +18,7 @@ app.use(function (req, res, next) {
 
 app.use(Parser.json());
 app.use(Parser.urlencoded({ extended: true }));
-app.set('port', process.env.PORT || 2000);
+app.set('port', process.env.PORT || 3000);
 
 
 // Set default route
@@ -29,6 +27,7 @@ app.get('/', function (req, res) {
 });
 
 app.use('/user', routesUsers);
+app.use('/spotify', routesSpotify);
 
 // Create server
 Http.createServer(app).listen(app.get('port'), function () {

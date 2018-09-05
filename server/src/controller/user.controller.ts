@@ -1,11 +1,14 @@
 import { User } from '../../../common/class';
 import { UserModel } from '../model/user';
 import { Connection } from '../database/database';
+import { spotifyInfos } from '../../configSpotify';
+
 // import * as bodyParser from 'body-parser';
 var Express = require('express');
 
 let routesUsers = Express();
 let user: User;
+
 
 routesUsers.get('/', async function (req, res, err) {
     try {
