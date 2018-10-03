@@ -1,8 +1,8 @@
 export class User {
     idUser?: number;
-    username?: string;
+    id?: string;
+    display_name?: string;
     email?: string;
-    password?: string;
     prenom?: string;
     nom?: string;
     age?: string;

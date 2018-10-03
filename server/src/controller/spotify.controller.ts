@@ -2,6 +2,10 @@
 import { authorizeURL } from '../../configAuthorizeURL';
 import { spotifyInfos } from '../../configSpotify';
 import { config } from '../../config';
+import { Connection } from '../database/database';
+import { UserModel } from '../model/user';
+import { User } from '../../../common/class';
+
 var SpotifyWebApi = require('spotify-web-api-node');
 var Express = require('express');
 var routesSpotify = Express();
@@ -46,12 +50,49 @@ routesSpotify.use('/get_infos', async function(req, res, err) {
 
 routesSpotify.use('/get_user_infos', async function (req, res) {
     try {
+        let user: User;
         spotifyApi.getMe().then(function(data) {
-            res.send({"code": 200, "data": data.body});
+            user = data.body;
+            Connection.sync().then(function () {
+                UserModel.find({
+                    where: {
+                        display_name: data.body.display_name
+                    }
+                }).then(res => {
+                    if (res == null) {
+                        UserModel.create(user)
+                    } else {
+                        UserModel.update(
+                            user, 
+                            { where: { display_name: data.body.display_name }}
+                        )
+                    }
+                });
+            });
+            res.redirect(config.url + "spotify/get_user_top_artists");
         });
     } catch(e) {
         console.log(e);
         res.send({"code": 400, "Erreur": e});
+    }
+});
+
+routesSpotify.use('/get_user_top_artists', async function (req, res) {
+    try {
+        spotifyApi.getMyTopArtists({
+            'time_range': 'medium_term',
+            'limit': 10
+        }).then(function(data) {
+            console.log(data.body.items);
+            // Object.keys(o).forEach(function(key) {
+            //     var val = o[key];
+            //     logic();
+            //   });
+            res.send({"code": 200, "message": 'Yes man'});
+        });
+    } catch(err) {
+        console.log(err);
+        res.send({"code": 400, "Erreur": err});
     }
 });
 

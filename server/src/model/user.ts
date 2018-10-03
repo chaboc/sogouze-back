@@ -7,9 +7,9 @@ export const UserModel = Connection.define('users', {
         autoIncrement: true,
         primaryKey: true
     },
-    username: Sequelize.STRING,
+    id: Sequelize.STRING,
+    display_name: Sequelize.STRING,
     email: Sequelize.STRING,
-    password: Sequelize.STRING,
     prenom: Sequelize.STRING,
     nom: Sequelize.STRING,
     age: Sequelize.INTEGER,
