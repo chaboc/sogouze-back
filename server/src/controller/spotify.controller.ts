@@ -53,6 +53,7 @@ routesSpotify.use('/get_user_infos', async function (req, res) {
         let user: User;
         spotifyApi.getMe().then(function(data) {
             user = data.body;
+            user.spotiyId = data.body.id;
             Connection.sync().then(function () {
                 UserModel.find({
                     where: {
@@ -83,12 +84,9 @@ routesSpotify.use('/get_user_top_artists', async function (req, res) {
             'time_range': 'medium_term',
             'limit': 10
         }).then(function(data) {
-            console.log(data.body.items);
-            // Object.keys(o).forEach(function(key) {
-            //     var val = o[key];
-            //     logic();
-            //   });
-            res.send({"code": 200, "message": 'Yes man'});
+            let test = data.body.items;
+            console.log(test);
+            res.send({"code": 200, "message": 'ok'});
         });
     } catch(err) {
         console.log(err);

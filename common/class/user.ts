@@ -1,10 +1,10 @@
 export class User {
-    idUser?: number;
-    id?: string;
+    id?: number;
+    spotiyId?: string;
     display_name?: string;
     email?: string;
-    prenom?: string;
-    nom?: string;
+    first_name?: string;
+    last_name?: string;
     age?: string;
     createdAt?: Date;
     updateAt?: Date;

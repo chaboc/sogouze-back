@@ -57,7 +57,7 @@ routesUsers.put('/', async function (req, res, err) {
     user = req.body;
     try {
         Connection.sync().then(function () {
-            UserModel.update(user, { where: { idUser: user.idUser } })
+            UserModel.update(user, { where: { idUser: user.id } })
             .then(result => res.send(result))
         })
     }
