@@ -1,6 +1,6 @@
 export class User {
     id?: number;
-    spotiyId?: string;
+    spotifyId?: string;
     display_name?: string;
     email?: string;
     first_name?: string;

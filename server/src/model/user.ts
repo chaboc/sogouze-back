@@ -3,7 +3,7 @@ import { Connection } from '../database/database';
 import {TrackModel, ArtistModel, GenreModel} from "./spotify";
 
 export const UserModel = Connection.define('users', {
-    id: {
+    idUser: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
