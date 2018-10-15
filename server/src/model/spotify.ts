@@ -3,7 +3,7 @@ import {UserModel} from "./user";
 var Sequelize = require('sequelize');
 
 export const TrackModel = Connection.define('tracks', {
-    id: {
+    idTrack: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -15,7 +15,7 @@ export const TrackModel = Connection.define('tracks', {
 
 
 export const ArtistModel = Connection.define('artists', {
-    id: {
+    idArtist: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -26,7 +26,7 @@ export const ArtistModel = Connection.define('artists', {
 });
 
 export const GenreModel = Connection.define('genres', {
-    id: {
+    idGenre: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -37,6 +37,6 @@ export const GenreModel = Connection.define('genres', {
 });
 
 
-TrackModel.hasMany(UserModel, {foreignKey: 'userId', targetKey: 'id'});
+// TrackModel.hasMany(UserModel, {foreignKey: 'userId', targetKey: 'id'});
 // ArtistModel.hasMany(UserModel, {foreignKey: 'userId', targetKey: 'id'});
 // GenreModel.hasMany(UserModel, {foreignKey: 'userId', targetKey: 'id'});
