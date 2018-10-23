@@ -6,6 +6,7 @@ export class User {
     first_name?: string;
     last_name?: string;
     age?: string;
+    genre?: boolean;
     createdAt?: Date;
     updateAt?: Date;
 }

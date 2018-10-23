@@ -1,18 +1,23 @@
 
 import { authorizeURL } from '../../configAuthorizeURL';
 import { spotifyInfos } from '../../configSpotify';
-import { config } from '../../config';
 import { Connection } from '../database/database';
-import { UserModel } from '../model/user';
-import { ArtistModel, TrackModel } from '../model/spotify';
+import { config } from '../../config';
+
+// SERVICES
+import { createUser, findUser, updateUser } from '../service/user.service';
+import { createTracks, deleteTracks } from '../service/track.service';
+import { createArtists, deleteArtists } from '../service/artist.service';
+
+// CLASS
 import { User } from '../../../common/class';
-import { Tracks } from '../../../common/class';
 
 var SpotifyWebApi = require('spotify-web-api-node');
 var Express = require('express');
 var routesSpotify = Express();
 
 var auth = authorizeURL;
+
 var spotifyApi = new SpotifyWebApi({
     clientId: spotifyInfos.clientId,
     clientSecret: spotifyInfos.clientSecret,
@@ -30,102 +35,88 @@ routesSpotify.get('/login', async function (req, res, err) {
         res.send(err);
     }
 })
-
-routesSpotify.use('/get_infos', async function(req, res, err) {
-    var code = req.query.code;
-    if (req.query.code){
-        spotifyApi.authorizationCodeGrant(req.query.code).then(
-            function(data) {
-                spotifyApi.setAccessToken(data.body['access_token']);
-                spotifyApi.setRefreshToken(data.body['refresh_token']);
-            },
-            function(err) {
-                console.log('Something went wrong!', err);
-            }
-        );
+routesSpotify.use('/get_infos', async function (req, res, err) {
+    if (req.query.code) {
+        await spotifyApi.authorizationCodeGrant(req.query.code).then( function (data) {
+            spotifyApi.setAccessToken(data.body['access_token']);
+            spotifyApi.setRefreshToken(data.body['refresh_token']);
+        });
         res.redirect(config.url + "spotify/get_user_infos");
     }
     else {
-        res.status(400).json({"error": "undefined"}).end();
+        res.status(400).json({ "error": "undefined" }).end();
     }
 })
 
 routesSpotify.use('/get_user_infos', async function (req, res) {
     try {
-        let user: User;
-        spotifyApi.getMe().then(function(data) {
-            user = data.body;
-            user.spotifyId = data.body.id;
-            Connection.sync().then(function () {
-                UserModel.find({
-                    where: {
-                        display_name: data.body.display_name
-                    }
-                }).then(res => {
-                    if (res != null) {
-                        UserModel.update(
-                            user, 
-                            { where: { display_name: data.body.display_name }}
-                        )
-                    } else {
-                        UserModel.create(user).then( function (result) {
-                            spotifyApi.getMyTopArtists({'time_range': 'short_term', 'limit': 5 }).then( function (artists) {
-                                artists.body.items.forEach(item => {
-                                    ArtistModel.create({
-                                        'userId': result.get('idUser'),
-                                        'spotifyId': item.id,
-                                        'name': item.name
-                                    })
-                                });
-                            })
-                            spotifyApi.getMyTopTracks({ 'time_range': 'short_term', 'limit': 25 }).then( function(tracks) {
-                                tracks.body.items.forEach(item => {
-                                    TrackModel.create({
-                                        'userId': result.get('idUser'),
-                                        'spotifyId': item.id,
-                                        'name': item.name
-                                    })
-                                });
-                            })
-                        })
-                    }
-                });
-            });
-            res.send({"code": 200, "message": 'ok'});
-        });
-    } catch(e) {
+        let user: User
+        let getUser: any
+        let isUserExist: Number
+        let currentUser: Number
+
+        await Connection.sync()
+        getUser = await spotifyApi.getMe()
+        user = getUser.body
+        user.spotifyId = getUser.body.id
+
+        isUserExist = await findUser(getUser.body.display_name)
+        console.log('RESULT: ', isUserExist)
+        if (isUserExist != null) {
+            currentUser = isUserExist
+            await updateUser(user, getUser.body.display_name)
+            // await deleteArtists(currentUser)
+            // await deleteTracks(currentUser)
+            // await deleteGenres(currentUser)
+            console.log('CURRENT USER: ', currentUser)
+        } else {
+            currentUser = await createUser(user)
+            console.log('CURRENT USER: ', currentUser)
+        }
+        await spotifyApi.getMyTopArtists({ 'time_range': 'short_term', 'limit': 10 }).then(function (data) {
+            let artists: Array<any> = data.body.items
+            createArtists(artists, currentUser)
+        })
+        // spotifyApi.getMyTopTracks({ 'time_range': 'short_term', 'limit': 50 }).then(function (data) {
+        //     let tracks: Array<any> = data.body.items
+        //     createTracks(tracks, currentUser)
+        // })
+
+        res.send({ "code": 200, "message": 'ok' });
+    } catch (e) {
         console.log(e);
-        res.send({"code": 400, "Erreur": e});
+        res.send({ "code": 400, "Erreur": e });
     }
 });
-routesSpotify.use('/get_matching', async function (req, res) {
-try {
 
-    let myTracks: Array<Tracks> = [];
-    let otherTracks: Array<Tracks> = [];
+routesSpotify.use('/get_matching/:id', async function (req, res) {
+    // try {
 
-    Connection.sync().then(function () {
-        TrackModel.findAll({
-            where: {
-                userId: "14"
-            }
-        }).then( function (tracksMe) {
-            console.log(tracksMe);
-            myTracks = tracksMe;
-            TrackModel.findAll({
-                where: {
-                    userId: "15"
-                }
-            }).then( function (tracksothers) {
-                console.log(tracksMe);
-                otherTracks = tracksothers;
-            })
-        })
-    })
-} catch(e) {
-    console.log(e);
-    res.send({"code": 400, "Erreur": e});
-}
+    //     let myTracks: Array<Tracks> = [];
+    //     let otherTracks: Array<Tracks> = [];
+
+    //     Connection.sync().then(function () {
+    //         TrackModel.findAll({
+    //             where: {
+    //                 userId: "14"
+    //             }
+    //         }).then(function (tracksMe) {
+    //             console.log(tracksMe);
+    //             myTracks = tracksMe;
+    //             TrackModel.findAll({
+    //                 where: {
+    //                     userId: "15"
+    //                 }
+    //             }).then(function (tracksothers) {
+    //                 console.log(tracksMe);
+    //                 otherTracks = tracksothers;
+    //             })
+    //         })
+    //     })
+    // } catch (e) {
+    //     console.log(e);
+    //     res.send({ "code": 400, "Erreur": e });
+    // }
 });
 
 module.exports = routesSpotify;

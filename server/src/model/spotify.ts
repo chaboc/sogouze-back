@@ -35,8 +35,3 @@ export const GenreModel = Connection.define('genres', {
     spotifyId: Sequelize.STRING,
     name: Sequelize.STRING,
 });
-
-
-// TrackModel.hasMany(UserModel, {foreignKey: 'userId', targetKey: 'id'});
-// ArtistModel.hasMany(UserModel, {foreignKey: 'userId', targetKey: 'id'});
-// GenreModel.hasMany(UserModel, {foreignKey: 'userId', targetKey: 'id'});
