@@ -1,5 +1,4 @@
 import {Connection} from "../database/database";
-import {UserModel} from "./user";
 var Sequelize = require('sequelize');
 
 export const TrackModel = Connection.define('tracks', {
@@ -32,6 +31,6 @@ export const GenreModel = Connection.define('genres', {
         primaryKey: true
     },
     userId: Sequelize.STRING,
-    spotifyId: Sequelize.STRING,
     name: Sequelize.STRING,
+    occurence: Sequelize.INTEGER
 });

@@ -8,9 +8,11 @@ import { config } from '../../config';
 import { createUser, findUser, updateUser } from '../service/user.service';
 import { createTracks, deleteTracks } from '../service/track.service';
 import { createArtists, deleteArtists } from '../service/artist.service';
+import { createGenres, deleteGenres, findGenres } from '../service/genre.service';
 
 // CLASS
 import { User } from '../../../common/class';
+import { Genres } from '../../../common/class';
 
 var SpotifyWebApi = require('spotify-web-api-node');
 var Express = require('express');
@@ -54,13 +56,14 @@ routesSpotify.use('/get_user_infos', async function (req, res) {
         let getUser: any
         let isUserExist: Number
         let currentUser: Number
+        let genres: any
 
         await Connection.sync()
         getUser = await spotifyApi.getMe()
         user = getUser.body
         user.spotifyId = getUser.body.id
 
-        isUserExist = await findUser(getUser.body.display_name)
+        isUserExist = await findUser(user.id)
         console.log('RESULT: ', isUserExist)
         if (isUserExist != null) {
             currentUser = isUserExist
@@ -73,14 +76,17 @@ routesSpotify.use('/get_user_infos', async function (req, res) {
             currentUser = await createUser(user)
             console.log('CURRENT USER: ', currentUser)
         }
-        await spotifyApi.getMyTopArtists({ 'time_range': 'short_term', 'limit': 10 }).then(function (data) {
+        await spotifyApi.getMyTopArtists({ 'time_range': 'short_term', 'limit': 10 }).then(async function (data) {
             let artists: Array<any> = data.body.items
-            createArtists(artists, currentUser)
+            // genres = await createArtists(artists, currentUser)
+            console.log('genres: ', genres)
+            // await createGenres(genres, currentUser)
         })
-        // spotifyApi.getMyTopTracks({ 'time_range': 'short_term', 'limit': 50 }).then(function (data) {
-        //     let tracks: Array<any> = data.body.items
-        //     createTracks(tracks, currentUser)
-        // })
+
+        spotifyApi.getMyTopTracks({ 'time_range': 'short_term', 'limit': 30 }).then(function (data) {
+            let tracks: Array<any> = data.body.items
+            // createTracks(tracks, currentUser)
+        })
 
         res.send({ "code": 200, "message": 'ok' });
     } catch (e) {
@@ -90,33 +96,14 @@ routesSpotify.use('/get_user_infos', async function (req, res) {
 });
 
 routesSpotify.use('/get_matching/:id', async function (req, res) {
-    // try {
-
-    //     let myTracks: Array<Tracks> = [];
-    //     let otherTracks: Array<Tracks> = [];
-
-    //     Connection.sync().then(function () {
-    //         TrackModel.findAll({
-    //             where: {
-    //                 userId: "14"
-    //             }
-    //         }).then(function (tracksMe) {
-    //             console.log(tracksMe);
-    //             myTracks = tracksMe;
-    //             TrackModel.findAll({
-    //                 where: {
-    //                     userId: "15"
-    //                 }
-    //             }).then(function (tracksothers) {
-    //                 console.log(tracksMe);
-    //                 otherTracks = tracksothers;
-    //             })
-    //         })
-    //     })
-    // } catch (e) {
-    //     console.log(e);
-    //     res.send({ "code": 400, "Erreur": e });
-    // }
+    try {
+        let userId: number = req.params.id;
+        findGenres(userId)
+        res.send({ "code": 200, "message": "ok" });
+    } catch (e) {
+        console.log(e);
+        res.send({ "code": 400, "Erreur": e });
+    }
 });
 
 module.exports = routesSpotify;

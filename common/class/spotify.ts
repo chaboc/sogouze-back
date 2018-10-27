@@ -15,6 +15,6 @@ export class Artists {
 export class Genres {
     id?: number;
     userId?: number;
-    spotifyId?: string;
     name?: string;
+    occurence?: number;
 };
