@@ -11,7 +11,10 @@ import { createArtists, deleteArtists } from '../service/artist.service';
 import { createGenres, deleteGenres, findGenres, findGenresOthers } from '../service/genre.service';
 
 // CLASS
-import { User, Matching, Genres } from '../../../common/class';
+import { User, Matching, Genres, Matchs } from '../../../common/class';
+import { createListMatching, deleteListMatching, getListMatching, deleteOneMatching } from '../service/listMatching.service';
+import { sortObject } from '../functions/array_duplicate_counter';
+import { createMatch, getListMatchs } from '../service/matchs.service';
 
 var SpotifyWebApi = require('spotify-web-api-node');
 var Express = require('express');
@@ -38,7 +41,7 @@ routesSpotify.get('/login', async function (req, res, err) {
 })
 routesSpotify.use('/get_infos', async function (req, res, err) {
     if (req.query.code) {
-        await spotifyApi.authorizationCodeGrant(req.query.code).then( function (data) {
+        await spotifyApi.authorizationCodeGrant(req.query.code).then(function (data) {
             spotifyApi.setAccessToken(data.body['access_token']);
             spotifyApi.setRefreshToken(data.body['refresh_token']);
         });
@@ -63,17 +66,14 @@ routesSpotify.use('/get_user_infos', async function (req, res) {
         user.spotifyId = getUser.body.id
 
         isUserExist = await findUser(getUser.body.display_name)
-        console.log('RESULT: ', isUserExist)
         if (isUserExist != null) {
             currentUser = isUserExist
             await updateUser(user, getUser.body.display_name)
             await deleteArtists(currentUser)
             await deleteTracks(currentUser)
             await deleteGenres(currentUser)
-            console.log('CURRENT USER: ', currentUser)
         } else {
             currentUser = await createUser(user)
-            console.log('CURRENT USER: ', currentUser)
         }
         await spotifyApi.getMyTopArtists({ 'time_range': 'short_term', 'limit': 10 }).then(async function (data) {
             let artists: Array<any> = data.body.items
@@ -100,31 +100,74 @@ routesSpotify.use('/get_matching/:id', async function (req, res) {
         let properties: Matching
         let userId: number = req.params.id
         let myGenres = await findGenres(userId)
-        let othersGenres =  await findGenresOthers(userId)
+        let othersGenres = await findGenresOthers(userId)
+
+        deleteListMatching(userId)
 
         await othersGenres.map(user => {
             myGenres.map(myGenre => {
                 user.genres.map(genre => {
                     if (myGenre.name == genre.name) {
-                        myGenre.occurence >= genre.occurence? 
-                        matching += genre.occurence : matching += myGenre.occurence;
+                        myGenre.occurence >= genre.occurence ?
+                            matching += genre.occurence : matching += myGenre.occurence;
                     }
                 });
             })
             properties = {
                 userId: userId,
                 matchingId: user.genres[0].userId,
-                pourcentage:matching
+                pourcentage: matching
             }
             arrayMatching.push(properties)
             matching = 0
         })
-        console.log(arrayMatching)
-        
+        createListMatching(arrayMatching);
+
         res.send({ "code": 200, "message": "ok" })
-    } catch (e) {
-        console.log(e)
-        res.send({ "code": 400, "Erreur": e })
+    } catch (err) {
+        console.log(err)
+        res.send({ "code": 400, "Erreur": err })
+    }
+});
+
+routesSpotify.use('/get_list_matching/:id', async function (req, res) {
+    try {
+        let data: any;
+        let userId: number = req.params.id
+        data = await getListMatching(userId)
+        await data.sort(sortObject('pourcentage'))
+        console.log(data)
+        res.send({ "code": 200, "data": data })
+    } catch (err) {
+        console.log(err)
+        res.send({ "code": 400, "Erreur": err })
+    }
+});
+
+routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
+    try {
+        let match: Matchs = {
+            userId: req.params.id,
+            matchingId: req.params.opponentId,
+            like: req.params.like
+        }
+        createMatch(match)
+        deleteOneMatching(req.params.id, req.params.opponentId)
+        res.send({ "code": 200, "message": "ok" })
+    } catch (err) {
+        console.log(err)
+        res.send({ "code": 400, "Erreur": err })
+    }
+});
+
+routesSpotify.use('/get_matchs/:id', async function (req, res) {
+    try {
+        let userId: number = req.params.id
+        let data = await getListMatchs(userId)
+        res.send({ "code": 200, "message": data })
+    } catch (err) {
+        console.log(err)
+        res.send({ "code": 400, "Erreur": err })
     }
 });
 

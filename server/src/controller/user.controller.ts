@@ -35,7 +35,6 @@ routesUsers.get('/:params', async function (req, res, err) {
 })
 
 routesUsers.post('/', async function (req, res, err) {
-    console.log(req.body);
     user = req.body;
     try {
         Connection.sync().then(function () {

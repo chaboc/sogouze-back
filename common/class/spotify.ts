@@ -25,3 +25,10 @@ export class Matching {
     matchingId?: string
     pourcentage?: number
 };
+
+export class Matchs {
+    id?: number
+    userId?: number
+    matchingId?: string
+    like?: number
+};

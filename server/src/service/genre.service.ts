@@ -1,4 +1,4 @@
-import { GenreModel } from '../model/spotify';
+import { GenreModel, MatchModel } from '../model/spotify';
 import { Genres } from '../../../common/class';
 var Sequelize = require('sequelize');
 const Op = Sequelize.Op
@@ -6,14 +6,11 @@ const Op = Sequelize.Op
 export function findGenres(userId): Promise<any> {
     return new Promise<any>((resolve, reject) => {
         try {
-            GenreModel.findAll({ 
+            GenreModel.findAll({
                 attributes: ['userId', 'name', 'occurence'],
-                where: { userId: userId } 
+                where: { userId: userId }
             }).then(function (data) {
                 if (data != null) {
-                    data.forEach(genres => {
-                        console.log(genres.dataValues)
-                    });
                     resolve(data)
                 } else {
                     resolve(null)
@@ -32,11 +29,25 @@ export function findGenresOthers(userId): Promise<any> {
             let currentUserId: number
             let oldUserId: number = -1
             let pos = 0
-            GenreModel.findAll({ 
+            // let query = "SELECT G.userId, G.name, G.occurence "
+            // query += "FROM listMatchings LM "
+            // query += "INNER JOIN genres G ON (LM.userId != "+userId+" AND LM.matchingId != G.userId)"
+            // query += "WHERE LM.matchingId != G.userId "
+            // query += "ORDER BY G.userId"
+            GenreModel.findAll({
                 attributes: ['userId', 'name', 'occurence'],
-                where: { userId: {
-                    [Op.ne]: userId 
-                }} 
+                where: {
+                    userId: {
+                        [Op.ne]: userId
+                    }
+                },
+                // include: [{
+                //     model: MatchModel,
+                    // through: {
+                    //     where: ["(userId != " + userId + " AND matchingId != userId)"]
+                    // }
+                // }],
+                order: ['userId']
             }).then(function (data) {
                 if (data != null) {
                     data.map(genres => {
