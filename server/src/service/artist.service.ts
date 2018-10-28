@@ -23,6 +23,14 @@ export async function createArtists(artists: Array<any>, currentUser: Number): P
             arrayGenres = functions.compressArray(arrayArtists)
             arrayGenres.sort(functions.sortObject('occurence'))
             let genres: Array<Genres> = Object.keys(arrayGenres).slice(0,3).map(key => (arrayGenres[key]));
+            let totalGenre: number = 0;
+
+            Object.keys(genres).map(function(key) {
+                totalGenre = totalGenre + genres[key].occurence;
+             });
+             Object.keys(genres).map(function(key) {
+                genres[key].occurence = Math.round(genres[key].occurence / totalGenre * 100);
+             });
 
             resolve(genres)
         } catch (err) {

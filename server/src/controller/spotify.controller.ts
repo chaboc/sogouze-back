@@ -8,11 +8,10 @@ import { config } from '../../config';
 import { createUser, findUser, updateUser } from '../service/user.service';
 import { createTracks, deleteTracks } from '../service/track.service';
 import { createArtists, deleteArtists } from '../service/artist.service';
-import { createGenres, deleteGenres, findGenres } from '../service/genre.service';
+import { createGenres, deleteGenres, findGenres, findGenresOthers } from '../service/genre.service';
 
 // CLASS
-import { User } from '../../../common/class';
-import { Genres } from '../../../common/class';
+import { User, Matching, Genres } from '../../../common/class';
 
 var SpotifyWebApi = require('spotify-web-api-node');
 var Express = require('express');
@@ -54,7 +53,7 @@ routesSpotify.use('/get_user_infos', async function (req, res) {
     try {
         let user: User
         let getUser: any
-        let isUserExist: Number
+        let isUserExist: any
         let currentUser: Number
         let genres: any
 
@@ -63,14 +62,14 @@ routesSpotify.use('/get_user_infos', async function (req, res) {
         user = getUser.body
         user.spotifyId = getUser.body.id
 
-        isUserExist = await findUser(user.id)
+        isUserExist = await findUser(getUser.body.display_name)
         console.log('RESULT: ', isUserExist)
         if (isUserExist != null) {
             currentUser = isUserExist
             await updateUser(user, getUser.body.display_name)
-            // await deleteArtists(currentUser)
-            // await deleteTracks(currentUser)
-            // await deleteGenres(currentUser)
+            await deleteArtists(currentUser)
+            await deleteTracks(currentUser)
+            await deleteGenres(currentUser)
             console.log('CURRENT USER: ', currentUser)
         } else {
             currentUser = await createUser(user)
@@ -78,31 +77,54 @@ routesSpotify.use('/get_user_infos', async function (req, res) {
         }
         await spotifyApi.getMyTopArtists({ 'time_range': 'short_term', 'limit': 10 }).then(async function (data) {
             let artists: Array<any> = data.body.items
-            // genres = await createArtists(artists, currentUser)
-            console.log('genres: ', genres)
-            // await createGenres(genres, currentUser)
+            genres = await createArtists(artists, currentUser)
+            await createGenres(genres, currentUser)
         })
 
         spotifyApi.getMyTopTracks({ 'time_range': 'short_term', 'limit': 30 }).then(function (data) {
             let tracks: Array<any> = data.body.items
-            // createTracks(tracks, currentUser)
+            createTracks(tracks, currentUser)
         })
 
-        res.send({ "code": 200, "message": 'ok' });
+        res.send({ "code": 200, "message": 'ok' })
     } catch (e) {
         console.log(e);
-        res.send({ "code": 400, "Erreur": e });
+        res.send({ "code": 400, "Erreur": e })
     }
 });
 
 routesSpotify.use('/get_matching/:id', async function (req, res) {
     try {
-        let userId: number = req.params.id;
-        findGenres(userId)
-        res.send({ "code": 200, "message": "ok" });
+        let matching: number = 0
+        let arrayMatching: Array<Matching> = []
+        let properties: Matching
+        let userId: number = req.params.id
+        let myGenres = await findGenres(userId)
+        let othersGenres =  await findGenresOthers(userId)
+
+        await othersGenres.map(user => {
+            myGenres.map(myGenre => {
+                user.genres.map(genre => {
+                    if (myGenre.name == genre.name) {
+                        myGenre.occurence >= genre.occurence? 
+                        matching += genre.occurence : matching += myGenre.occurence;
+                    }
+                });
+            })
+            properties = {
+                userId: userId,
+                matchingId: user.genres[0].userId,
+                pourcentage:matching
+            }
+            arrayMatching.push(properties)
+            matching = 0
+        })
+        console.log(arrayMatching)
+        
+        res.send({ "code": 200, "message": "ok" })
     } catch (e) {
-        console.log(e);
-        res.send({ "code": 400, "Erreur": e });
+        console.log(e)
+        res.send({ "code": 400, "Erreur": e })
     }
 });
 

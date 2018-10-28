@@ -1,10 +1,10 @@
 import { UserModel } from '../model/user';
 import { User } from '../../../common/class';
 
-export function findUser(id): Promise<any> {
+export function findUser(username: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
         try {
-            UserModel.find({ where: { idUser: id } }).then(function (data) {
+            UserModel.find({ where: { display_name: username } }).then(function (data) {
                 if (data != null) {
                     resolve(data.get('idUser'))
                 } else {

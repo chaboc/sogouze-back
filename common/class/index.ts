@@ -1,4 +1,4 @@
 import { User } from './user';
-import { Tracks, Artists, Genres } from './spotify';
+import { Tracks, Artists, Genres, Matching } from './spotify';
 
-export { User, Tracks, Artists, Genres };
+export { User, Tracks, Artists, Genres, Matching };

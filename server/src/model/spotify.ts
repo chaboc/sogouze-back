@@ -34,3 +34,14 @@ export const GenreModel = Connection.define('genres', {
     name: Sequelize.STRING,
     occurence: Sequelize.INTEGER
 });
+
+// export const ListMatchingModel = Connection.define('listMatching', {
+//     idListMatching: {
+//         type: Sequelize.INTEGER,
+//         autoIncrement: true,
+//         primaryKey: true
+//     },
+//     userId: Sequelize.STRING,
+//     name: Sequelize.STRING,
+//     occurence: Sequelize.INTEGER
+// });
