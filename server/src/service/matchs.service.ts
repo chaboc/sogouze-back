@@ -33,13 +33,13 @@ export function createMatch(match: Matchs): void {
     }
 }
 
-// export async function deleteListMatching(userId: Number): Promise<any> {
-//     return new Promise<any>(async (resolve, reject) => {
-//         try {
-//             await ListMatchingModel.destroy({ where: { 'userId': userId } })
-//             resolve("ok")
-//         } catch (err) {
-//             reject(err)
-//         }
-//     })
-// }
+export async function updateMatch(userId: number, matchingId: number): Promise<any> {
+    return new Promise<any>(async (resolve, reject) => {
+        try {
+            await MatchModel.update({ like: false }, { where: { 'userId': userId, 'matchingId': matchingId } })
+            resolve("ok")
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
