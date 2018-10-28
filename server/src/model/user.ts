@@ -19,6 +19,6 @@ export const UserModel = Connection.define('users', {
     genreId: Sequelize.INTEGER,
 })
 
-UserModel.hasMany(TrackModel, {foreignKey: 'trackId', targetKey: 'id'});
-UserModel.hasMany(ArtistModel, {foreignKey: 'artistId', targetKey: 'id'});
-UserModel.hasMany(GenreModel, {foreignKey: 'genreId', targetKey: 'id'});
+// UserModel.hasMany(TrackModel, {foreignKey: 'trackId', targetKey: 'id'});
+// UserModel.hasMany(ArtistModel, {foreignKey: 'artistId', targetKey: 'id'});
+// UserModel.hasMany(GenreModel, {foreignKey: 'genreId', targetKey: 'id'});
