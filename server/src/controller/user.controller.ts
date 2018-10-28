@@ -27,12 +27,7 @@ routesUsers.get('/', async function (req, res, err) {
 routesUsers.get('/:params', async function (req, res, err) {
     user = JSON.parse(req.params.params);
     try {
-        // Connection.sync().then(function () {
-        //     UserModel.find({ where: { username: user.username, password: user.password }})
-        //         .then(result => {
-        //             res.send(result)
-        //         })
-        // })
+        res.send({'message': 'ok'})
     }
     catch {
         res.send(err);
@@ -40,7 +35,6 @@ routesUsers.get('/:params', async function (req, res, err) {
 })
 
 routesUsers.post('/', async function (req, res, err) {
-    console.log(req.body);
     user = req.body;
     try {
         Connection.sync().then(function () {

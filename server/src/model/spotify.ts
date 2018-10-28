@@ -1,9 +1,30 @@
 import {Connection} from "../database/database";
-import {UserModel} from "./user";
 var Sequelize = require('sequelize');
 
+export const ListMatchingModel = Connection.define('listMatching', {
+    idListMatching: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    userId: Sequelize.STRING,
+    matchingId: Sequelize.STRING,
+    pourcentage: Sequelize.INTEGER
+});
+
+export const MatchModel = Connection.define('matchs', {
+    idMatch: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    userId: Sequelize.STRING,
+    matchingId: Sequelize.STRING,
+    like: Sequelize.BOOLEAN
+});
+
 export const TrackModel = Connection.define('tracks', {
-    id: {
+    idTrack: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -13,9 +34,8 @@ export const TrackModel = Connection.define('tracks', {
     name: Sequelize.STRING,
 });
 
-
 export const ArtistModel = Connection.define('artists', {
-    id: {
+    idArtist: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -26,17 +46,14 @@ export const ArtistModel = Connection.define('artists', {
 });
 
 export const GenreModel = Connection.define('genres', {
-    id: {
+    idGenre: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
     userId: Sequelize.STRING,
-    spotifyId: Sequelize.STRING,
     name: Sequelize.STRING,
+    occurence: Sequelize.INTEGER
 });
 
-
-TrackModel.hasMany(UserModel, {foreignKey: 'userId', targetKey: 'id'});
-// ArtistModel.hasMany(UserModel, {foreignKey: 'userId', targetKey: 'id'});
-// GenreModel.hasMany(UserModel, {foreignKey: 'userId', targetKey: 'id'});
+GenreModel.hasMany(MatchModel)
