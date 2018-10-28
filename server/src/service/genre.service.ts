@@ -1,7 +1,6 @@
 import { GenreModel, MatchModel } from '../model/spotify';
 import { Genres } from '../../../common/class';
-var Sequelize = require('sequelize');
-const Op = Sequelize.Op
+import { Connection } from '../database/database'
 
 export function findGenres(userId): Promise<any> {
     return new Promise<any>((resolve, reject) => {
@@ -29,40 +28,45 @@ export function findGenresOthers(userId): Promise<any> {
             let currentUserId: number
             let oldUserId: number = -1
             let pos = 0
-            // let query = "SELECT G.userId, G.name, G.occurence "
-            // query += "FROM listMatchings LM "
-            // query += "INNER JOIN genres G ON (LM.userId != "+userId+" AND LM.matchingId != G.userId)"
-            // query += "WHERE LM.matchingId != G.userId "
-            // query += "ORDER BY G.userId"
-            GenreModel.findAll({
-                attributes: ['userId', 'name', 'occurence'],
-                where: {
-                    userId: {
-                        [Op.ne]: userId
-                    }
-                },
+
+            Connection.query('\
+            SELECT G."userId", G."name", G."occurence" \
+            FROM "genres" G  \
+            RIGHT JOIN "matchs" M ON (M."userId" = :userId AND M."matchingId" != G."userId") \
+            WHERE G."userId" != :userId \
+            ORDER BY G."userId"',
+            { 
+                replacements: {'userId': userId}, 
+                type: Connection.QueryTypes.SELECT
+            // GenreModel.findAll({
+            //     attributes: ['userId', 'name', 'occurence'],
+            //     where: {
+            //         userId: {
+            //             [Op.ne]: userId
+            //         }
+            //     },
                 // include: [{
                 //     model: MatchModel,
                     // through: {
                     //     where: ["(userId != " + userId + " AND matchingId != userId)"]
                     // }
                 // }],
-                order: ['userId']
+                // order: ['userId']
             }).then(function (data) {
                 if (data != null) {
                     data.map(genres => {
-                        currentUserId = genres.dataValues.userId
+                        currentUserId = genres.userId
                         if (oldUserId == -1) {
                             othersGenres.push({
-                                'genres': [genres.dataValues]
+                                'genres': [genres]
                             })
                         } else {
                             if (oldUserId == currentUserId) {
-                                othersGenres[pos].genres.push(genres.dataValues)
+                                othersGenres[pos].genres.push(genres)
                             }
                             else {
                                 othersGenres.push({
-                                    'genres': [genres.dataValues]
+                                    'genres': [genres]
                                 })
                                 pos++
                             }
