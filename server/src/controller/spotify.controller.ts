@@ -14,7 +14,7 @@ import { createGenres, deleteGenres, findGenres, findGenresOthers } from '../ser
 import { User, Matching, Genres, Matchs } from '../../../common/class';
 import { createListMatching, deleteListMatching, getListMatching, deleteOneMatching } from '../service/listMatching.service';
 import { sortObject } from '../functions/array_duplicate_counter';
-import { createMatch, getListMatchs } from '../service/matchs.service';
+import { createMatch, getListMatchs, updateMatch } from '../service/matchs.service';
 
 var SpotifyWebApi = require('spotify-web-api-node');
 var Express = require('express');
@@ -99,10 +99,11 @@ routesSpotify.use('/get_matching/:id', async function (req, res) {
         let arrayMatching: Array<Matching> = []
         let properties: Matching
         let userId: number = req.params.id
+
+        await deleteListMatching(userId)
+
         let myGenres = await findGenres(userId)
         let othersGenres = await findGenresOthers(userId)
-
-        deleteListMatching(userId)
 
         await othersGenres.map(user => {
             myGenres.map(myGenre => {
@@ -164,6 +165,18 @@ routesSpotify.use('/get_matchs/:id', async function (req, res) {
     try {
         let userId: number = req.params.id
         let data = await getListMatchs(userId)
+        res.send({ "code": 200, "message": data })
+    } catch (err) {
+        console.log(err)
+        res.send({ "code": 400, "Erreur": err })
+    }
+});
+
+routesSpotify.use('/del_match/:id/:matchingId', async function (req, res) {
+    try {
+        let userId: number = req.params.id
+        let matchingId: number = req.params.matchingId
+        let data = await updateMatch(userId, matchingId)
         res.send({ "code": 200, "message": data })
     } catch (err) {
         console.log(err)
