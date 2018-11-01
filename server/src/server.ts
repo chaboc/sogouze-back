@@ -6,7 +6,6 @@ var Http = require('http');
 var Express = require('express');
 var Parser = require('body-parser');
 // var socketio = require('socket.io');
-export const io = require('socket.io')(Http);
 
 // Setup express
 let app = Express();
@@ -35,6 +34,8 @@ app.use('/spotify', routesSpotify);
 var server = Http.createServer(app).listen(app.get('port'), function () {
     console.log('Server listening on port ' + app.get('port'));
 });
+
+export const io = require('socket.io')(server);
 
 var  registeredSockets: any;
 io.on('connection', function(socket){
