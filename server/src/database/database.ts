@@ -1,8 +1,8 @@
 var Sequelize = require('sequelize');
 
 const bdd = "PLI";
-const user = "Franco";
-const pass = "tictac";
+const user = "postgres";
+const pass = "root";
 const myDialect = { host: 'localhost', dialect: 'postgres', operatorsAliases: false };
 
 export const Connection = new Sequelize(

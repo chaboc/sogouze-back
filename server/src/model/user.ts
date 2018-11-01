@@ -15,11 +15,12 @@ export const UserModel = Connection.define('users', {
     last_name: Sequelize.STRING,
     age: Sequelize.INTEGER,
     genre: Sequelize.BOOLEAN,
+    preference: Sequelize.BOOLEAN,
     trackId: Sequelize.INTEGER,
     artistId: Sequelize.INTEGER,
     genreId: Sequelize.INTEGER,
 })
 
-UserModel.hasMany(TrackModel, {foreignKey: 'trackId', targetKey: 'id'});
-UserModel.hasMany(ArtistModel, {foreignKey: 'artistId', targetKey: 'id'});
-UserModel.hasMany(GenreModel, {foreignKey: 'genreId', targetKey: 'id'});
+// UserModel.hasMany(TrackModel, {foreignKey: 'trackId', targetKey: 'id'});
+// UserModel.hasMany(ArtistModel, {foreignKey: 'artistId', targetKey: 'id'});
+// UserModel.hasMany(GenreModel, {foreignKey: 'genreId', targetKey: 'id'});

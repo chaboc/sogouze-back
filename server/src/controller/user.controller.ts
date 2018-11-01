@@ -5,6 +5,7 @@ import { spotifyInfos } from '../../configSpotify';
 
 // import * as bodyParser from 'body-parser';
 var Express = require('express');
+var Parser = require('body-parser');
 
 let routesUsers = Express();
 let user: User;
@@ -49,13 +50,15 @@ routesUsers.post('/', async function (req, res, err) {
 
 routesUsers.put('/', async function (req, res, err) {
     user = req.body;
+    console.log('user' + user);
     try {
         Connection.sync().then(function () {
             UserModel.update(user, { where: { idUser: user.id } })
             .then(result => res.send(result))
+            .catch(err => res.send(err))
         })
     }
-    catch {
+    catch(err){
         res.send(err);
     }
 })
