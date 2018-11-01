@@ -186,7 +186,7 @@ routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
         }).then(data => {
             if(data.length > 0) {
                 UserModel.findAll({ where: { id: [ req.params.id, req.params.opponentId] } }).then (users =>
-                    io.emit('match', users)
+                    io.emit('notifications', users)
                 )
             }
         })

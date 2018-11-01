@@ -36,9 +36,9 @@ var server = Http.createServer(app).listen(app.get('port'), function () {
     console.log('Server listening on port ' + app.get('port'));
 });
 
-const  registeredSockets: any[] = [];
+var  registeredSockets: any;
 io.on('connection', function(socket){
-    registeredSockets[socket.id] = socket;
+    registeredSockets = socket;
     console.log(socket);
     console.log('CONNECTD');
     socket.on('chan', function(msg){
