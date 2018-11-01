@@ -1,30 +1,45 @@
 import { MatchModel } from '../model/spotify';
 import { Matchs } from '../../../common/class';
-import { getUsersListMatching } from '../service/listMatching.service';
+import { Connection } from '../database/database'
 
 
 export function getListMatchs(userId: number): any {
     return new Promise<any>(async (resolve, reject) => {
         try {
-            let arrayMatchings: Array<Matchs> = []
-            let user: any;
-            MatchModel.findAll({
-                where:
-                {
-                    userId: userId,
-                    like: true
-                },
-            }).then(function (data) {
-                data.forEach(matchs => {
-                    user = getUsersListMatching(parseInt(matchs.matchingId)).then ( user => {
-                        matchs.user = user.dataValues
-                        arrayMatchings.push(matchs)
-                        if(data.length == arrayMatchings.length)
-                            resolve(arrayMatchings);
-                    })
-                });
-                resolve(data);
+            let arrayUser: Array<any> = []
+            let arrayMatching: Array<any> = []
+            let matchs: Array<any> = []
+
+            await Connection.query('\
+            SELECT M."userId", M."matchingId", U."display_name", U."first_name", U."last_name" \
+            FROM "matchs" M \
+            INNER JOIN "users" U ON U."idUser" = M."userId"::int \
+            WHERE M."userId" = :userId AND M."like" = true'
+            ,{ 
+                replacements: {'userId': userId}, 
+                type: Connection.QueryTypes.SELECT
+            }).then (function (data) {
+                arrayUser = data
             })
+            await Connection.query('\
+            SELECT M."userId", M."matchingId", U."display_name", U."first_name", U."last_name" \
+            FROM "matchs" M \
+            INNER JOIN "users" U ON U."idUser" = M."userId"::int \
+            WHERE M."matchingId" = :userId AND M."like" = true'
+            ,{ 
+                replacements: {'userId': userId}, 
+                type: Connection.QueryTypes.SELECT
+            }).then (function (data) {
+                arrayMatching = data
+            })
+
+            await arrayUser.forEach(async (user) => {
+                await arrayMatching.forEach(matching => {
+                    if (user['userId'] === matching['matchingId'] && user['matchingId'] === matching['userId'])
+                        matchs.push(user);
+                });
+            });
+            resolve(matchs);
         } catch (err) {
             console.log(err)
             reject(err)
