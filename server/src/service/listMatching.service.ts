@@ -16,6 +16,8 @@ export function getListMatching(userId: number): any {
                 },
                 limit: 5
             }).then(function (data) {
+                if (data.length == 0) 
+                    resolve(data);
                 data.forEach(matching => {
                     user = getUsersListMatching(parseInt(matching.matchingId)).then ( user => {
                         matching.dataValues.user = user.dataValues

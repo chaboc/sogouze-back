@@ -5,7 +5,8 @@ import * as routesSpotify from './controller/spotify.controller';
 var Http = require('http');
 var Express = require('express');
 var Parser = require('body-parser');
-var socketio = require('socket.io');
+// var socketio = require('socket.io');
+var io = require('socket.io')(Http);
 
 // Setup express
 let app = Express();
@@ -35,8 +36,10 @@ var server = Http.createServer(app).listen(app.get('port'), function () {
     console.log('Server listening on port ' + app.get('port'));
 });
 
-var websocket = socketio(server);
-
-websocket.on('connection', (socket) => {
-    console.log('A client just joined on', socket.id);
-  });
+io.on('connection', function(socket){
+    console.log('CONNECTD');
+    socket.on('chan', function(msg){
+        console.log('MESSAGE');
+        io.emit('chat message', msg);
+    });
+});

@@ -16,10 +16,13 @@ import { createListMatching, deleteListMatching, getListMatching, deleteOneMatch
 import { sortObject } from '../functions/array_duplicate_counter';
 import { createMatch, getListMatchs, updateMatch } from '../service/matchs.service';
 import { UserModel } from '../model/user';
+import { ListMatchingModel, MatchModel } from '../model/spotify';
 
+var Http = require('http');
 var SpotifyWebApi = require('spotify-web-api-node');
 var Express = require('express');
 var routesSpotify = Express();
+var io = require('socket.io')(Http);
 
 var auth = authorizeURL;
 
@@ -155,6 +158,20 @@ routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
         }
         createMatch(match)
         deleteOneMatching(req.params.id, req.params.opponentId)
+        MatchModel.findAll({
+            where:
+            {
+                userId: req.params.opponentId,
+                matchingId: req.params.id,
+                like: true
+            },
+        }).then(data => {
+            if(data.length > 0) {
+                UserModel.findAll({ where: { id: [ req.params.id, req.params.opponentId] } }).then (user =>
+                    io.emit('User', user)
+                )
+            }
+        })
         res.send({ "code": 200, "message": "ok" })
     } catch (err) {
         console.log(err)
