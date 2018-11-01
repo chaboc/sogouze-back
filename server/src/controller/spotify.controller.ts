@@ -12,9 +12,10 @@ import { createGenres, deleteGenres, findGenres, findGenresOthers } from '../ser
 
 // CLASS
 import { User, Matching, Genres, Matchs } from '../../../common/class';
-import { createListMatching, deleteListMatching, getListMatching, deleteOneMatching } from '../service/listMatching.service';
+import { createListMatching, deleteListMatching, getListMatching, deleteOneMatching, getUsersListMatching, getUsersListMatchs } from '../service/listMatching.service';
 import { sortObject } from '../functions/array_duplicate_counter';
 import { createMatch, getListMatchs, updateMatch } from '../service/matchs.service';
+import { UserModel } from '../model/user';
 
 var SpotifyWebApi = require('spotify-web-api-node');
 var Express = require('express');
@@ -134,11 +135,14 @@ routesSpotify.use('/get_matching/:id', async function (req, res) {
 routesSpotify.use('/get_list_matching/:id', async function (req, res) {
     try {
         let data: any;
+        let users: any;
         let userId: number = req.params.id
         data = await getListMatching(userId)
         await data.sort(sortObject('pourcentage'))
         console.log(data)
-        res.send({ "code": 200, "data": data })
+        users = await getUsersListMatching(data)
+        console.log(users, 'MDR')
+        res.send({ "code": 200, "data": data, "users": users })
     } catch (err) {
         console.log(err)
         res.send({ "code": 400, "Erreur": err })
@@ -163,9 +167,11 @@ routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
 
 routesSpotify.use('/get_matchs/:id', async function (req, res) {
     try {
+        let users: any;
         let userId: number = req.params.id
         let data = await getListMatchs(userId)
-        res.send({ "code": 200, "message": data })
+        users = await getUsersListMatchs(data)
+        res.send({ "code": 200, "data": data, "users": users })
     } catch (err) {
         console.log(err)
         res.send({ "code": 400, "Erreur": err })
