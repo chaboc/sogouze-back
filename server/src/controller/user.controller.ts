@@ -26,10 +26,10 @@ routesUsers.get('/', async function (req, res, err) {
 })
 
 routesUsers.get('/:params', async function (req, res, err) {
-    user = JSON.parse(req.params.params);
     try {
-        res.send({'message': 'ok'})
-    }
+    UserModel.findById(req.params.params).then(user =>
+        res.send({'message': user})
+    )}
     catch {
         res.send(err);
     }
