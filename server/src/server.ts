@@ -39,8 +39,9 @@ export const io = require('socket.io')(server);
 
 var  registeredSockets: any;
 io.on('connection', function(socket){
+    io.emit('notifications', 'tot')
     registeredSockets = socket;
-    console.log(socket);
+    // console.log(socket);
     console.log('CONNECTD');
     socket.on('chan', function(msg){
         console.log('MESSAGE');
