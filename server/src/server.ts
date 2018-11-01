@@ -6,7 +6,7 @@ var Http = require('http');
 var Express = require('express');
 var Parser = require('body-parser');
 // var socketio = require('socket.io');
-var io = require('socket.io')(Http);
+export const io = require('socket.io')(Http);
 
 // Setup express
 let app = Express();
@@ -36,7 +36,9 @@ var server = Http.createServer(app).listen(app.get('port'), function () {
     console.log('Server listening on port ' + app.get('port'));
 });
 
+const  registeredSockets: any[] = [];
 io.on('connection', function(socket){
+    registeredSockets[socket.id] = socket;
     console.log('CONNECTD');
     socket.on('chan', function(msg){
         console.log('MESSAGE');

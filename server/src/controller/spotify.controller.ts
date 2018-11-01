@@ -3,6 +3,7 @@ import { authorizeURL } from '../../configAuthorizeURL';
 import { spotifyInfos } from '../../configSpotify';
 import { Connection } from '../database/database';
 import { config } from '../../config';
+import { io } from '../server';
 
 // SERVICES
 import { createUser, findUser, updateUser } from '../service/user.service';
@@ -22,7 +23,8 @@ var Http = require('http');
 var SpotifyWebApi = require('spotify-web-api-node');
 var Express = require('express');
 var routesSpotify = Express();
-var io = require('socket.io')(Http);
+// var io = require('socket.io')(Http);
+
 
 var auth = authorizeURL;
 
@@ -148,6 +150,22 @@ routesSpotify.use('/get_list_matching/:id', async function (req, res) {
         res.send({ "code": 400, "Erreur": err })
     }
 });
+
+
+// function pushMe( data ) {
+//     registeredSockets[data.socketid].emit( data.action, data.value );
+// }
+
+// io.sockets.on('connection', function( socket ) {
+//   socket.on('join', function( data ) {
+//     registeredSockets[socket.id] = socket;
+//     /** ... */
+//   });
+
+//   socket.on('disconnect', function() {
+//     /** ... */
+//   });
+// });
 
 routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
     try {
