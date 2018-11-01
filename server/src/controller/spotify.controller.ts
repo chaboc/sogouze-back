@@ -176,23 +176,24 @@ routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
             like: req.params.like
         }
         createMatch(match)
-        deleteOneMatching(req.params.id, req.params.opponentId)
-        MatchModel.findAll({
-            where:
-            {
-                userId: req.params.opponentId,
-                matchingId: req.params.id,
-                like: true
-            },
-        }).then(data => {
-            if(data.length > 0) {
-                UserModel.findAll({ where: { idUser: [ req.params.id, req.params.opponentId] } }).then (users => {
-                    usersArray.push(users)
-                    io.emit('notifications', usersArray)
-                })
-            }
+        deleteOneMatching(req.params.id, req.params.opponentId).then (_ => {
+            MatchModel.findAll({
+                where:
+                {
+                    userId: req.params.opponentId,
+                    matchingId: req.params.id,
+                    like: true
+                },
+            }).then(data => {
+                if(data.length > 0) {
+                    UserModel.findAll({ where: { idUser: [ req.params.id, req.params.opponentId] } }).then (users => {
+                        usersArray.push(users)
+                        io.emit('notifications', usersArray)
+                    })
+                }
+            })
+            res.send({ "code": 200, "message": "ok" })
         })
-        res.send({ "code": 200, "message": "ok" })
     } catch (err) {
         console.log(err)
         res.send({ "code": 400, "Erreur": err })
