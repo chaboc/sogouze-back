@@ -8,6 +8,7 @@ export function getListMatching(userId: number): any {
     return new Promise<any>(async (resolve, reject) => {
         try {
             let arrayMatchings: Array<Matching> = []
+            let user: any;
             ListMatchingModel.findAll({
                 where:
                 {
@@ -16,10 +17,13 @@ export function getListMatching(userId: number): any {
                 limit: 5
             }).then(function (data) {
                 data.forEach(matching => {
-                    console.log('MATCH' + matching)
-                    arrayMatchings.push(matching)
-                });
-                resolve(data);
+                    user = getUsersListMatching(parseInt(matching.matchingId)).then ( user => {
+                        matching.dataValues.user = user.dataValues
+                        arrayMatchings.push(matching)
+                        if(data.length == arrayMatchings.length)
+                            resolve(arrayMatchings);
+                    })
+                });    
             })
         } catch (err) {
             console.log(err)
@@ -30,19 +34,13 @@ export function getListMatching(userId: number): any {
 
 
 
-export function getUsersListMatching(data: Array<Matching>): any {
+export function getUsersListMatching(id: number): any {
     return new Promise<any>(async (resolve, reject) => {
         try {
-            let arrayUser: Array<User> = []
-            data.forEach(match => {
-                UserModel.findById(match.matchingId).then(function (user) {
-                    console.log('USER ' + user)
-                    arrayUser.push(user);
-                    console.log(data.length, arrayUser.length);
-                    if (arrayUser.length == data.length)
-                        resolve(arrayUser);
-                });
-            })
+            UserModel.findById(id).then(function (user) {
+                resolve(user);
+            });
+            
         } catch (err) {
             console.log(err)
             reject(err)

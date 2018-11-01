@@ -1,11 +1,13 @@
 import { MatchModel } from '../model/spotify';
 import { Matchs } from '../../../common/class';
+import { getUsersListMatching } from '../service/listMatching.service';
 
 
 export function getListMatchs(userId: number): any {
     return new Promise<any>(async (resolve, reject) => {
         try {
             let arrayMatchings: Array<Matchs> = []
+            let user: any;
             MatchModel.findAll({
                 where:
                 {
@@ -14,7 +16,12 @@ export function getListMatchs(userId: number): any {
                 },
             }).then(function (data) {
                 data.forEach(matchs => {
-                    arrayMatchings.push(matchs)
+                    user = getUsersListMatching(parseInt(matchs.matchingId)).then ( user => {
+                        matchs.dataValues.user = user.dataValues
+                        arrayMatchings.push(matchs)
+                        if(data.length == arrayMatchings.length)
+                            resolve(arrayMatchings);
+                    })
                 });
                 resolve(data);
             })

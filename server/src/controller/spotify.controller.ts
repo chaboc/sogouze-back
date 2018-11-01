@@ -12,7 +12,7 @@ import { createGenres, deleteGenres, findGenres, findGenresOthers } from '../ser
 
 // CLASS
 import { User, Matching, Genres, Matchs } from '../../../common/class';
-import { createListMatching, deleteListMatching, getListMatching, deleteOneMatching, getUsersListMatching, getUsersListMatchs } from '../service/listMatching.service';
+import { createListMatching, deleteListMatching, getListMatching, deleteOneMatching,  getUsersListMatchs } from '../service/listMatching.service';
 import { sortObject } from '../functions/array_duplicate_counter';
 import { createMatch, getListMatchs, updateMatch } from '../service/matchs.service';
 import { UserModel } from '../model/user';
@@ -139,10 +139,7 @@ routesSpotify.use('/get_list_matching/:id', async function (req, res) {
         let userId: number = req.params.id
         data = await getListMatching(userId)
         await data.sort(sortObject('pourcentage'))
-        console.log(data)
-        users = await getUsersListMatching(data)
-        console.log(users, 'MDR')
-        res.send({ "code": 200, "data": data, "users": users })
+        res.send({ "code": 200, "data": data })
     } catch (err) {
         console.log(err)
         res.send({ "code": 400, "Erreur": err })
@@ -170,7 +167,6 @@ routesSpotify.use('/get_matchs/:id', async function (req, res) {
         let users: any;
         let userId: number = req.params.id
         let data = await getListMatchs(userId)
-        users = await getUsersListMatchs(data)
         res.send({ "code": 200, "data": data, "users": users })
     } catch (err) {
         console.log(err)
