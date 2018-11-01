@@ -169,12 +169,12 @@ routesSpotify.use('/get_list_matching/:id', async function (req, res) {
 
 routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
     try {
+        let usersArray: Array<User>;
         let match: Matchs = {
             userId: req.params.id,
             matchingId: req.params.opponentId,
             like: req.params.like
         }
-        io.emit('notifications', match)
         createMatch(match)
         deleteOneMatching(req.params.id, req.params.opponentId)
         MatchModel.findAll({
@@ -187,8 +187,9 @@ routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
         }).then(data => {
             if(data.length > 0) {
                 UserModel.findAll({ where: { id: [ req.params.id, req.params.opponentId] } }).then (users =>
-                    io.emit('notifications', users)
+                    usersArray.push(users)
                 )
+                io.emit('notifications', usersArray)
             }
         })
         res.send({ "code": 200, "message": "ok" })
