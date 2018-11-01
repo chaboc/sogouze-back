@@ -17,7 +17,7 @@ export function getListMatchs(userId: number): any {
             }).then(function (data) {
                 data.forEach(matchs => {
                     user = getUsersListMatching(parseInt(matchs.matchingId)).then ( user => {
-                        matchs.dataValues.user = user.dataValues
+                        matchs.user = user.dataValues
                         arrayMatchings.push(matchs)
                         if(data.length == arrayMatchings.length)
                             resolve(arrayMatchings);

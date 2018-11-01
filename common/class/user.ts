@@ -7,6 +7,9 @@ export class User {
     last_name?: string;
     age?: string;
     genre?: boolean;
+    preference?: boolean;
+    desc?: string;
+    img?: string;
     createdAt?: Date;
     updateAt?: Date;
 }

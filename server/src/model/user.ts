@@ -17,6 +17,7 @@ export const UserModel = Connection.define('users', {
     genre: Sequelize.BOOLEAN,
     preference: Sequelize.BOOLEAN,
     desc : Sequelize.STRING,
+    img : Sequelize.STRING,
     trackId: Sequelize.INTEGER,
     artistId: Sequelize.INTEGER,
     genreId: Sequelize.INTEGER,
