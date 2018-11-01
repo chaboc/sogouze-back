@@ -174,6 +174,7 @@ routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
             matchingId: req.params.opponentId,
             like: req.params.like
         }
+        io.emit('notifications', match)
         createMatch(match)
         deleteOneMatching(req.params.id, req.params.opponentId)
         MatchModel.findAll({
