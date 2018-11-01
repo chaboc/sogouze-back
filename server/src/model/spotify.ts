@@ -55,5 +55,3 @@ export const GenreModel = Connection.define('genres', {
     name: Sequelize.STRING,
     occurence: Sequelize.INTEGER
 });
-
-GenreModel.hasMany(MatchModel)
