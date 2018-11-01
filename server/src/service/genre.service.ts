@@ -32,26 +32,12 @@ export function findGenresOthers(userId): Promise<any> {
             Connection.query('\
             SELECT G."userId", G."name", G."occurence" \
             FROM "genres" G  \
-            RIGHT JOIN "matchs" M ON (M."userId" = :userId AND M."matchingId" != G."userId") \
-            WHERE G."userId" != :userId \
+            LEFT JOIN "matchs" M ON (M."userId" = :userId AND M."matchingId" != G."userId") \
+            WHERE G."userId" != :userId AND (M."userId" IS NOT NULL OR NOT EXISTS (SELECT M."userId" FROM "matchs" MT)) \
             ORDER BY G."userId"',
             { 
                 replacements: {'userId': userId}, 
                 type: Connection.QueryTypes.SELECT
-            // GenreModel.findAll({
-            //     attributes: ['userId', 'name', 'occurence'],
-            //     where: {
-            //         userId: {
-            //             [Op.ne]: userId
-            //         }
-            //     },
-                // include: [{
-                //     model: MatchModel,
-                    // through: {
-                    //     where: ["(userId != " + userId + " AND matchingId != userId)"]
-                    // }
-                // }],
-                // order: ['userId']
             }).then(function (data) {
                 if (data != null) {
                     data.map(genres => {
