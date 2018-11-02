@@ -51,7 +51,7 @@ export function getListMatchs(userId: number): any {
             });
 
             if(it == 0)
-                resolve(null)
+                resolve([])
             
             await arrayUser.forEach(async (user) => {
                 await arrayMatching.forEach(async (matching) => {
