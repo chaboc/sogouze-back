@@ -226,4 +226,16 @@ routesSpotify.use('/del_match/:id/:matchingId', async function (req, res) {
     }
 });
 
+routesSpotify.use('/search/:displayName/:id', async function (req, res) {
+    try {
+        let userId: number = req.params.id
+        let displayName: string = req.params.displayName
+        // let data = await getListMatching(userId, displayName)
+        res.send({ "code": 200, "message": "ok" })
+    } catch (err) {
+        console.log(err)
+        res.send({ "code": 400, "Erreur": err })
+    }
+});
+
 module.exports = routesSpotify;
