@@ -36,6 +36,9 @@ export function getListMatchs(userId: number): any {
                 arrayMatching = data
             })
 
+            if(arrayMatching == null)
+                resolve(null)
+
             await arrayUser.forEach(async (user) => {
                 await arrayMatching.forEach(matching => {
                     if (user['userId'] === matching['matchingId'] && user['matchingId'] === matching['userId']){
