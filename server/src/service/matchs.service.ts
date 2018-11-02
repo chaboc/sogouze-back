@@ -42,16 +42,17 @@ export function getListMatchs(userId: number): any {
                         UserModel.findAll({ where: { idUser: user['matchingId'] } }).then ( matchedUser => {
                             if(matchedUser.length > 0){
                                 user.usersMatched = matchedUser[0].dataValues
+                                console.log(user)
                                 matchs.push(user);
                                 console.log(arrayMatching.length)
                                 console.log(matchs.length)
                                 if (arrayMatching.length == matchs.length)
                                     resolve(matchs)
                             }
+                            else {
+                                resolve(null)
+                            }
                         })
-                    }
-                    else {
-                        resolve(null)
                     }
                 });
             });
