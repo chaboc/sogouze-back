@@ -101,6 +101,7 @@ routesSpotify.use('/get_user_infos', async function (req, res) {
 
 routesSpotify.use('/get_matching/:id', async function (req, res) {
     try {
+        let preference: boolean = false
         let matching: number = 0
         let arrayMatching: Array<Matching> = []
         let properties: Matching
@@ -108,8 +109,14 @@ routesSpotify.use('/get_matching/:id', async function (req, res) {
 
         await deleteListMatching(userId)
 
+        await UserModel.find({ where: { idUser: userId } }).then(async function (data) {
+                preference = await data.dataValues.preference
+                console.log(data.dataValues)
+                console.log(preference)
+        })
+
         let myGenres = await findGenres(userId)
-        let othersGenres = await findGenresOthers(userId)
+        let othersGenres = await findGenresOthers(userId, preference)
 
         await othersGenres.map(async (user) => {
             await myGenres.map(async (myGenre) => {
@@ -152,22 +159,6 @@ routesSpotify.use('/get_list_matching/:id', async function (req, res) {
         res.send({ "code": 400, "Erreur": err })
     }
 });
-
-
-// function pushMe( data ) {
-//     registeredSockets[data.socketid].emit( data.action, data.value );
-// }
-
-// io.sockets.on('connection', function( socket ) {
-//   socket.on('join', function( data ) {
-//     registeredSockets[socket.id] = socket;
-//     /** ... */
-//   });
-
-//   socket.on('disconnect', function() {
-//     /** ... */
-//   });
-// });
 
 routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
     try {
