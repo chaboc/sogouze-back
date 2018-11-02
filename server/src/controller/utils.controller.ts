@@ -20,7 +20,18 @@ routesUtils.use('/create_new_user', async function (req, res) {
         let newUserId: number
         let arrayTracks: Array<any> = []
         let arrayArtists: Array<any> = []
-        let arrayFirst_name: Array<string> = utils.user_infos.first_name
+        let arrayFirst_name: Array<string>
+        let genreUser: boolean
+        let prefUser: boolean
+
+        genreUser = Math.random() >= 0.5
+        if (genreUser != true) {
+            arrayFirst_name = utils.user_infos.first_name.homme
+            prefUser = true
+        } else {
+            arrayFirst_name = utils.user_infos.first_name.femme
+            prefUser = false
+        }
         let arrayLast_name: Array<string> = utils.user_infos.last_name
         let arrayGenres: Array<string> = [] = utils.user_infos.genres
 
@@ -34,8 +45,8 @@ routesUtils.use('/create_new_user', async function (req, res) {
             "first_name": first_name,
             "last_name": last_name,
             "age": Math.round(Math.random() * (80 - 18) + 18),
-            "genre": Math.random() >= 0.5,
-            "preference": Math.random() >= 0.5,
+            "genre": genreUser,
+            "preference": prefUser
         }
 
         newUserId = await createUser(user)
