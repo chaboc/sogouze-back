@@ -52,7 +52,7 @@ export function getListMatchs(userId: number): any {
                                 if (arrayMatching.length <= matchs.length)
                                     resolve(matchs)
                             }
-                        })
+                        }).then(_ => resolve(null))
                     }
                 });
             });
