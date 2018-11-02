@@ -48,11 +48,9 @@ export function getListMatchs(userId: number): any {
                                 if (arrayMatching.length == matchs.length)
                                     resolve(matchs)
                             }
-                            else {
-                                matchs.push(user);
-                                resolve(matchs)
-                            }
                         })
+                        matchs.push(user);
+                        resolve(matchs)
                     }
                 });
             });
