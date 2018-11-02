@@ -50,19 +50,16 @@ export function getListMatchs(userId: number): any {
                                 user.usersMatched = matchedUser[0].dataValues
                                 console.log(user)
                                 matchs.push(user);
-                                console.log(arrayMatching.length)
-                                console.log(matchs.length)
-                                if (arrayMatching.length == matchs.length)
-                                    resolve(matchs)
-                            }
-                            else {
-                                resolve(null)
+                                // console.log(arrayMatching.length)
+                                // console.log(matchs.length)
+                                // if (arrayMatching.length == matchs.length)
+                                //     resolve(matchs)
                             }
                         })
                     }
                 });
             });
-            resolve(null)
+            resolve(matchs)
             
         } catch (err) {
             console.log(err)
