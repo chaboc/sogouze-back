@@ -36,10 +36,10 @@ export function getListMatchs(userId: number): any {
                 arrayMatching = data
             })
 
-            // console.log(arrayMatching)
-            // if(arrayMatching.length <= 0)
-                // resolve(null)
-
+            console.log(arrayMatching)
+            if(arrayMatching.length <= 0 && arrayUser.length <= 0)
+                resolve(null)
+            
             await arrayUser.forEach(async (user) => {
                 console.log('me: ' ,user)
                 await arrayMatching.forEach(async (matching) => {
@@ -49,9 +49,10 @@ export function getListMatchs(userId: number): any {
                             if(matchedUser.length > 0){
                                 user.usersMatched = matchedUser[0].dataValues
                                 await matchs.push(user);
-                                // if (arrayMatching.length <= matchs.length)
+                                if (arrayMatching.length <= matchs.length)
+                                    resolve(matchs)
                             }
-                        }).then(_ => resolve(matchs))
+                        })
                     }
                 });
             });
