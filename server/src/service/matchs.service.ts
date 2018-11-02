@@ -60,8 +60,8 @@ export function getListMatchs(userId: number): any {
                             }
                         })
                     }
-
                 });
+                resolve(null)
             });
             
         } catch (err) {
