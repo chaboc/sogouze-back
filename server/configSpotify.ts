@@ -1,5 +1,5 @@
 export const spotifyInfos = {
-    clientId: '1f53ea6459f348418a2544a555984181',
-    clientSecret: 'f2eb4c3ece3b4d848c377f25aefee44a',
-    redirectUri: 'http://localhost:3000/spotify/get_infos'
+    clientId: '0533bf706a274530824d90b6649e34e4',
+    clientSecret: '0d3365e3dc6f4972bf8f662de80e1d67',
+    redirectUri: 'http://172.16.248.3:3000/spotify/get_infos'
 }

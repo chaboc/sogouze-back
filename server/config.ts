@@ -1,5 +1,5 @@
 export const config = {
-    url: 'http://localhost:3000/',
+    url: 'http://172.16.248.3:3000/',
 }
 
 export const user_infos = {
