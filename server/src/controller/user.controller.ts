@@ -1,5 +1,6 @@
-import { User } from '../../../common/class';
+import { User, Genres } from '../../../common/class';
 import { UserModel } from '../model/user';
+import { GenreModel } from '../model/spotify';
 import { Connection } from '../database/database';
 import { spotifyInfos } from '../../configSpotify';
 
@@ -28,7 +29,10 @@ routesUsers.get('/', async function (req, res, err) {
 routesUsers.get('/:params', async function (req, res, err) {
     try {
     UserModel.findById(req.params.params).then(user =>
-        res.send({'message': user})
+        GenreModel.findAll({ where: {userId: req.params.params} }).then (genres => {
+                user.dataValues.genres = genres
+                res.send({'data': user})
+        })
     )}
     catch {
         res.send(err);

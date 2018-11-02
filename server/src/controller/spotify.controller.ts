@@ -3,6 +3,7 @@ import { authorizeURL } from '../../configAuthorizeURL';
 import { spotifyInfos } from '../../configSpotify';
 import { Connection } from '../database/database';
 import { config } from '../../config';
+import { io } from '../server';
 
 // SERVICES
 import { createUser, findUser, updateUser } from '../service/user.service';
@@ -22,7 +23,8 @@ var Http = require('http');
 var SpotifyWebApi = require('spotify-web-api-node');
 var Express = require('express');
 var routesSpotify = Express();
-var io = require('socket.io')(Http);
+// var io = require('socket.io')(Http);
+
 
 var auth = authorizeURL;
 
@@ -149,30 +151,49 @@ routesSpotify.use('/get_list_matching/:id', async function (req, res) {
     }
 });
 
+
+// function pushMe( data ) {
+//     registeredSockets[data.socketid].emit( data.action, data.value );
+// }
+
+// io.sockets.on('connection', function( socket ) {
+//   socket.on('join', function( data ) {
+//     registeredSockets[socket.id] = socket;
+//     /** ... */
+//   });
+
+//   socket.on('disconnect', function() {
+//     /** ... */
+//   });
+// });
+
 routesSpotify.use('/match/:id/:opponentId/:like', async function (req, res) {
     try {
+        let usersArray: Array<User> = [];
         let match: Matchs = {
             userId: req.params.id,
             matchingId: req.params.opponentId,
             like: req.params.like
         }
         createMatch(match)
-        deleteOneMatching(req.params.id, req.params.opponentId)
-        MatchModel.findAll({
-            where:
-            {
-                userId: req.params.opponentId,
-                matchingId: req.params.id,
-                like: true
-            },
-        }).then(data => {
-            if(data.length > 0) {
-                UserModel.findAll({ where: { id: [ req.params.id, req.params.opponentId] } }).then (users =>
-                    io.emit('match', users)
-                )
-            }
+        deleteOneMatching(req.params.id, req.params.opponentId).then (_ => {
+            MatchModel.findAll({
+                where:
+                {
+                    userId: req.params.opponentId,
+                    matchingId: req.params.id,
+                    like: true
+                },
+            }).then(data => {
+                if(data.length > 0) {
+                    UserModel.findAll({ where: { idUser: [ req.params.id, req.params.opponentId] } }).then (users => {
+                        usersArray.push(users)
+                        io.emit('notifications', usersArray)
+                    })
+                }
+            })
+            res.send({ "code": 200, "message": "ok" })
         })
-        res.send({ "code": 200, "message": "ok" })
     } catch (err) {
         console.log(err)
         res.send({ "code": 400, "Erreur": err })

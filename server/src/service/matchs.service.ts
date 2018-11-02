@@ -1,6 +1,8 @@
 import { MatchModel } from '../model/spotify';
+import { UserModel } from '../model/user';
 import { Matchs } from '../../../common/class';
-import { Connection } from '../database/database'
+import { Connection } from '../database/database';
+import { getUsersListMatching } from '../service/listMatching.service';
 
 
 export function getListMatchs(userId: number): any {
@@ -9,6 +11,7 @@ export function getListMatchs(userId: number): any {
             let arrayUser: Array<any> = []
             let arrayMatching: Array<any> = []
             let matchs: Array<any> = []
+            let userArray: any;
 
             await Connection.query('\
             SELECT M."userId", M."matchingId", U."display_name", U."first_name", U."last_name" \
@@ -35,11 +38,17 @@ export function getListMatchs(userId: number): any {
 
             await arrayUser.forEach(async (user) => {
                 await arrayMatching.forEach(matching => {
-                    if (user['userId'] === matching['matchingId'] && user['matchingId'] === matching['userId'])
-                        matchs.push(user);
+                    if (user['userId'] === matching['matchingId'] && user['matchingId'] === matching['userId']){
+                        UserModel.findAll({ where: { idUser: user['matchingId'] } }).then ( matchedUser => {
+                            user.usersMatched = matchedUser
+                            matchs.push(user);
+                            if (arrayMatching.length == matchs.length)
+                                resolve(matchs)
+                        })
+                    }
                 });
             });
-            resolve(matchs);
+            
         } catch (err) {
             console.log(err)
             reject(err)
