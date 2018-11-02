@@ -37,6 +37,7 @@ export function getListMatchs(userId: number): any {
             })
 
             console.log(arrayMatching)
+            console.log(arrayUser)
             if(arrayMatching.length <= 0 && arrayUser.length <= 0)
                 resolve(null)
             
