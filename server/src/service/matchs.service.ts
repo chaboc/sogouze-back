@@ -15,7 +15,7 @@ export function getListMatchs(userId: number): any {
             let it: number = 0;
 
             await Connection.query('\
-            SELECT M."userId", M."matchingId", U."display_name", U."first_name", U."last_name" \
+            SELECT DISTINCT on (M."userId") , M."matchingId", U."display_name", U."first_name", U."last_name" \
             FROM "matchs" M \
             INNER JOIN "users" U ON U."idUser" = M."userId"::int \
             WHERE M."userId" = :userId AND M."like" = true'
@@ -26,7 +26,7 @@ export function getListMatchs(userId: number): any {
                 arrayUser = data
             })
             await Connection.query('\
-            SELECT M."userId", M."matchingId", U."display_name", U."first_name", U."last_name" \
+            SELECT DISTINCT on (M."userId") ,M."matchingId", U."display_name", U."first_name", U."last_name" \
             FROM "matchs" M \
             INNER JOIN "users" U ON U."idUser" = M."userId"::int \
             WHERE M."matchingId" = :userId AND M."like" = true'
