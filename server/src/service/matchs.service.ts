@@ -40,7 +40,7 @@ export function getListMatchs(userId: number): any {
                 await arrayMatching.forEach(matching => {
                     if (user['userId'] === matching['matchingId'] && user['matchingId'] === matching['userId']){
                         UserModel.findAll({ where: { idUser: user['matchingId'] } }).then ( matchedUser => {
-                            if(matchedUser[0].dataValues != undefined){
+                            if(matchedUser.length > 0){
                                 user.usersMatched = matchedUser[0].dataValues
                                 matchs.push(user);
                                 console.log(arrayMatching.length)
