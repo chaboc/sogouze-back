@@ -45,11 +45,10 @@ export function getListMatchs(userId: number): any {
                 await arrayMatching.forEach(async (matching) => {
                     console.log('match :', matching)
                     if (user['userId'] === matching['matchingId'] && user['matchingId'] === matching['userId']){
-                        await UserModel.findAll({ where: { idUser: user['matchingId'] } }).then ( matchedUser => {
+                        await UserModel.findAll({ where: { idUser: user['matchingId'] } }).then ( async (matchedUser) => {
                             if(matchedUser.length > 0){
                                 user.usersMatched = matchedUser[0].dataValues
-                                console.log(user)
-                                matchs.push(user);
+                                await matchs.push(user);
                                 // console.log(arrayMatching.length)
                                 // console.log(matchs.length)
                                 // if (arrayMatching.length == matchs.length)
@@ -59,6 +58,7 @@ export function getListMatchs(userId: number): any {
                     }
                 });
             });
+            console.log(matchs)
             resolve(matchs)
             
         } catch (err) {
