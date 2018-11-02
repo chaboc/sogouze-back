@@ -49,10 +49,9 @@ export function getListMatchs(userId: number): any {
                             if(matchedUser.length > 0){
                                 user.usersMatched = matchedUser[0].dataValues
                                 await matchs.push(user);
-                                if (arrayMatching.length <= matchs.length)
-                                    resolve(matchs)
+                                // if (arrayMatching.length <= matchs.length)
                             }
-                        }).then(_ => resolve(null))
+                        }).then(_ => resolve(matchs))
                     }
                 });
             });
