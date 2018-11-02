@@ -39,11 +39,13 @@ export function findGenresOthers(userId): Promise<any> {
 
             // LEFT JOIN "matchs" M ON (M."userId" = :userId AND M."matchingId" != G."userId") \
             // AND (M."userId" IS NOT NULL OR NOT EXISTS (SELECT M."userId" FROM "matchs" MT)) 
-            Connection.query('\
-            SELECT G."userId", G."name", G."occurence" \
-            FROM "genres" G  \
-            WHERE G."userId" != :userId \
-            ORDER BY G."userId"',
+            // Connection.query('\
+            // SELECT G."userId", G."name", G."occurence" \
+            // FROM "genres" G  \
+            // WHERE G."userId" != :userId \
+            // ORDER BY G."userId"',
+
+            Connection.query(' SELECT G."userId", G."name", G."occurence" FROM "genres" G LEFT JOIN "matchs" M ON (M."userId" = :userId AND M."matchingId" != G."userId") WHERE G."userId" != :userId AND (M."userId" IS NOT NULL OR NOT EXISTS (SELECT M."userId" FROM "matchs" MT)) ORDER BY G."userId"',
             { 
                 replacements: {'userId': userId}, 
                 type: Connection.QueryTypes.SELECT
@@ -70,7 +72,34 @@ export function findGenresOthers(userId): Promise<any> {
                     });
                     resolve(othersGenres)
                 } else {
-                    resolve(null)
+                    Connection.query('SELECT G."userId", G."name", G."occurence" FROM "genres" G LEFT JOIN "matchs" M ON M."matchingId" != G."userId" WHERE G."userId" != :userId AND (M."userId" IS NOT NULL OR NOT EXISTS (SELECT M."userId" FROM "matchs" MT)) ORDER BY G."userId"',
+                    { 
+                        replacements: {'userId': userId}, 
+                        type: Connection.QueryTypes.SELECT
+                    }).then(function (data) {
+                        if (data != null) {
+                            data.map(genres => {
+                                currentUserId = genres.userId
+                                if (oldUserId == -1) {
+                                    othersGenres.push({
+                                        'genres': [genres]
+                                    })
+                                } else {
+                                    if (oldUserId == currentUserId) {
+                                        othersGenres[pos].genres.push(genres)
+                                    }
+                                    else {
+                                        othersGenres.push({
+                                            'genres': [genres]
+                                        })
+                                        pos++
+                                    }
+                                }
+                                oldUserId = currentUserId
+                            });
+                            resolve(othersGenres)
+                        }
+                    })
                 }
             })
         } catch (err) {
