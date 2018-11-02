@@ -49,16 +49,13 @@ export function getListMatchs(userId: number): any {
                             if(matchedUser.length > 0){
                                 user.usersMatched = matchedUser[0].dataValues
                                 await matchs.push(user);
-                                if (arrayMatching.length >= matchs.length)
+                                if (arrayMatching.length <= matchs.length)
                                     resolve(matchs)
                             }
                         })
                     }
                 });
             });
-            console.log(matchs)
-            resolve(matchs)
-            
         } catch (err) {
             console.log(err)
             reject(err)
