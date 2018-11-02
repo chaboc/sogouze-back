@@ -36,12 +36,14 @@ export function getListMatchs(userId: number): any {
                 arrayMatching = data
             })
 
-            console.log(arrayMatching)
-            if(arrayMatching.length <= 0)
-                resolve(null)
+            // console.log(arrayMatching)
+            // if(arrayMatching.length <= 0)
+                // resolve(null)
 
             await arrayUser.forEach(async (user) => {
+                console.log('me: ' ,user)
                 await arrayMatching.forEach(matching => {
+                    console.log('match :', matching)
                     if (user['userId'] === matching['matchingId'] && user['matchingId'] === matching['userId']){
                         UserModel.findAll({ where: { idUser: user['matchingId'] } }).then ( matchedUser => {
                             if(matchedUser.length > 0){
@@ -58,6 +60,7 @@ export function getListMatchs(userId: number): any {
                             }
                         })
                     }
+
                 });
             });
             
