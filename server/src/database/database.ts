@@ -1,6 +1,6 @@
 var Sequelize = require('sequelize');
 
-const bdd = "pli";
+const bdd = "PLI";
 const user = "postgres";
 const pass = "root";
 const myDialect = { host: 'localhost', dialect: 'postgres', operatorsAliases: false };
