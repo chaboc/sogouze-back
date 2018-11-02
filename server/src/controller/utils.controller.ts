@@ -1,14 +1,14 @@
 // SERVICES
-import { createUser, findUser, updateUser } from '../service/user.service';
-import { createTracks, deleteTracks, findRandomTracks } from '../service/track.service';
-import { createArtists, deleteArtists, findRandomArtists, creatRandomArtists } from '../service/artist.service';
-import { createGenres, deleteGenres, findGenres, findGenresOthers } from '../service/genre.service';
+import { createUser } from '../service/user.service';
+import { createTracks, findRandomTracks } from '../service/track.service';
+import { findRandomArtists, creatRandomArtists } from '../service/artist.service';
+import { createGenres } from '../service/genre.service';
 
 // CLASS
-import { User, Matching, Genres, Matchs, Tracks } from '../../../common/class';
-import { createListMatching, deleteListMatching, getListMatching, deleteOneMatching } from '../service/listMatching.service';
+import { User, Genres } from '../../../common/class';
+
+// FUNCTIONS
 import { sortObject } from '../functions/array_duplicate_counter';
-import { createMatch, getListMatchs, updateMatch } from '../service/matchs.service';
 
 import * as utils from "../../config"
 
@@ -41,12 +41,11 @@ routesUtils.use('/create_new_user', async function (req, res) {
         newUserId = await createUser(user)
         arrayTracks = await findRandomTracks()
         arrayArtists = await findRandomArtists()
-        console.log(arrayArtists)
         await createTracks(arrayTracks, newUserId)
         await creatRandomArtists(arrayArtists, newUserId)
 
-        let maxOccurence: number = 80
-        let tmpMaxOccurence: number = 80
+        let maxOccurence: number = 85
+        let tmpMaxOccurence: number = 85
         for (let i: number = 0; i < 3; i++) {
             if (i == 0) {
                 maxOccurence = Math.round(Math.random() * (maxOccurence - 40) + 40)

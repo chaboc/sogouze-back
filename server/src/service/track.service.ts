@@ -1,9 +1,7 @@
 import { TrackModel } from '../model/spotify';
 import { Tracks } from '../../../common/class';
 import { reject } from 'bluebird';
-import { spotifyInfos } from '../../configSpotify';
 import { Connection } from '../database/database';
-var Sequelize = require('sequelize');
 
 export async function findRandomTracks(): Promise<any> {
     try {
