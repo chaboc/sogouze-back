@@ -36,9 +36,9 @@ export function getListMatchs(userId: number): any {
                 arrayMatching = data
             })
 
-            console.log(arrayMatching)
-            console.log(arrayUser)
-            if(arrayMatching.length <= 0 && arrayUser.length <= 0)
+            console.log('arraymatching', arrayMatching)
+            console.log('arrayuser', arrayUser)
+            if(arrayMatching.length <= 0 || arrayUser.length <= 0)
                 resolve(null)
             
             await arrayUser.forEach(async (user) => {
