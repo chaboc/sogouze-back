@@ -2,6 +2,7 @@ import { ListMatchingModel } from '../model/spotify';
 import { UserModel } from '../model/user';
 import { Matching, Matchs } from '../../../common/class';
 import { User } from '../../../common/class';
+var Sequelize = require('sequelize');
 
 
 export function getListMatching(userId: number): any {
@@ -14,7 +15,8 @@ export function getListMatching(userId: number): any {
                 {
                     userId: userId
                 },
-                limit: 5
+                limit: 5,
+                order: Sequelize.literal('"pourcentage" DESC')
             }).then(function (data) {
                 if (data.length == 0) 
                     resolve(data);
@@ -56,9 +58,7 @@ export function getUsersListMatchs(data: Array<Matchs>): any {
             let arrayUser: Array<User> = []
             data.forEach(match => {
                 UserModel.findById(match.matchingId).then(function (user) {
-                    console.log('USER ' + user)
                     arrayUser.push(user);
-                    console.log(data.length, arrayUser.length);
                     if (arrayUser.length == data.length)
                         resolve(arrayUser);
                 });

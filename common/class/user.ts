@@ -5,7 +5,7 @@ export class User {
     email?: string;
     first_name?: string;
     last_name?: string;
-    age?: string;
+    age?: number;
     genre?: boolean;
     preference?: boolean;
     desc?: string;

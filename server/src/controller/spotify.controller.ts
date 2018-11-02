@@ -111,15 +111,17 @@ routesSpotify.use('/get_matching/:id', async function (req, res) {
         let myGenres = await findGenres(userId)
         let othersGenres = await findGenresOthers(userId)
 
-        await othersGenres.map(user => {
-            myGenres.map(myGenre => {
-                user.genres.map(genre => {
+        await othersGenres.map(async (user) => {
+            await myGenres.map(async (myGenre) => {
+                await user.genres.map(async (genre) => {
                     if (myGenre.name == genre.name) {
-                        myGenre.occurence >= genre.occurence ?
+                        await myGenre.occurence >= genre.occurence ?
                             matching += genre.occurence : matching += myGenre.occurence;
                     }
                 });
             })
+            if (matching > 100)
+                matching = 100
             properties = {
                 userId: userId,
                 matchingId: user.genres[0].userId,
