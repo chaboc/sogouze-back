@@ -12,6 +12,7 @@ export function getListMatchs(userId: number): any {
             let arrayMatching: Array<any> = []
             let matchs: Array<any> = []
             let userArray: any;
+            let it: number = 0;
 
             await Connection.query('\
             SELECT M."userId", M."matchingId", U."display_name", U."first_name", U."last_name" \
@@ -36,21 +37,30 @@ export function getListMatchs(userId: number): any {
                 arrayMatching = data
             })
 
-            console.log('arraymatching', arrayMatching)
-            console.log('arrayuser', arrayUser)
-            if(arrayMatching.length <= 0 || arrayUser.length <= 0)
+            // console.log('arraymatching', arrayMatching)
+            // console.log('arrayuser', arrayUser)
+            // if(arrayMatching.length <= 0 || arrayUser.length <= 0)
+                // resolve(null)
+
+            await arrayUser.forEach(async (user) => {
+                await arrayMatching.forEach(async (matching) => {
+                    if (user['userId'] === matching['matchingId'] && user['matchingId'] === matching['userId']){
+                        it++;
+                    }
+                });
+            });
+
+            if(it == 0)
                 resolve(null)
             
             await arrayUser.forEach(async (user) => {
-                console.log('me: ' ,user)
                 await arrayMatching.forEach(async (matching) => {
-                    console.log('match :', matching)
                     if (user['userId'] === matching['matchingId'] && user['matchingId'] === matching['userId']){
                         await UserModel.findAll({ where: { idUser: user['matchingId'] } }).then ( async (matchedUser) => {
                             if(matchedUser.length > 0){
                                 user.usersMatched = matchedUser[0].dataValues
                                 await matchs.push(user);
-                                if (arrayMatching.length <= matchs.length)
+                                if (it == matchs.length)
                                     resolve(matchs)
                             }
                         })
