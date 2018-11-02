@@ -1,4 +1,5 @@
 import * as routesUsers from './controller/user.controller';
+import * as routesUtils from './controller/utils.controller';
 import * as routesSpotify from './controller/spotify.controller';
 
 // Basic Setup
@@ -29,6 +30,7 @@ app.get('/', function (req, res) {
 
 app.use('/user', routesUsers);
 app.use('/spotify', routesSpotify);
+app.use('/utils', routesUtils)
 
 // Create server
 var server = Http.createServer(app).listen(app.get('port'), function () {

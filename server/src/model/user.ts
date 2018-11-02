@@ -18,9 +18,6 @@ export const UserModel = Connection.define('users', {
     preference: Sequelize.BOOLEAN,
     desc : Sequelize.STRING,
     img : Sequelize.STRING,
-    trackId: Sequelize.INTEGER,
-    artistId: Sequelize.INTEGER,
-    genreId: Sequelize.INTEGER,
 })
 
 // UserModel.hasMany(TrackModel, {foreignKey: 'trackId', targetKey: 'id'});

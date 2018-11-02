@@ -5,12 +5,20 @@ import { Connection } from '../database/database'
 export function findGenres(userId): Promise<any> {
     return new Promise<any>((resolve, reject) => {
         try {
+            let arrayGenres: Array<any> = []
             GenreModel.findAll({
                 attributes: ['userId', 'name', 'occurence'],
                 where: { userId: userId }
             }).then(function (data) {
                 if (data != null) {
-                    resolve(data)
+                    data.forEach(genre => {
+                        arrayGenres.push({
+                            "userId": userId,
+                            "name": genre.dataValues.name,
+                            "occurence": genre.dataValues.occurence
+                        })
+                    });
+                    resolve(arrayGenres)
                 } else {
                     resolve(null)
                 }
@@ -29,11 +37,12 @@ export function findGenresOthers(userId): Promise<any> {
             let oldUserId: number = -1
             let pos = 0
 
+            // LEFT JOIN "matchs" M ON (M."userId" = :userId AND M."matchingId" != G."userId") \
+            // AND (M."userId" IS NOT NULL OR NOT EXISTS (SELECT M."userId" FROM "matchs" MT)) 
             Connection.query('\
             SELECT G."userId", G."name", G."occurence" \
             FROM "genres" G  \
-            LEFT JOIN "matchs" M ON (M."userId" = :userId AND M."matchingId" != G."userId") \
-            WHERE G."userId" != :userId AND (M."userId" IS NOT NULL OR NOT EXISTS (SELECT M."userId" FROM "matchs" MT)) \
+            WHERE G."userId" != :userId \
             ORDER BY G."userId"',
             { 
                 replacements: {'userId': userId}, 
